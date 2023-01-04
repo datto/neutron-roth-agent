@@ -1,0 +1,30 @@
+frr version {{frr_version}}
+frr defaults traditional
+hostname {{hostname}}
+!
+router bgp {{asn}}
+ bgp router-id {{bgp_id}}
+ bgp graceful-restart
+ bgp graceful-restart preserve-fw-state
+ timers bgp 3 9
+ neighbor {{vrf_id}} peer-group
+ neighbor {{vrf_id}} remote-as internal
+ neighbor {{vrf_id}} bfd
+ neighbor {{vrf_id}} password {{bgp_pass}}
+ neighbor {{peer_ip}} peer-group {{vrf_id}}
+ !
+ address-family ipv4 unicast
+  redistribute connected route-map CONNECTED
+  neighbor {{vrf_id}} soft-reconfiguration inbound
+ exit-address-family
+exit
+!
+{% for network in router_networks -%}
+ip prefix-list TENANT_SUBNETS seq {{ loop.index }} permit {{ network }}
+{% endfor -%}
+!
+route-map CONNECTED permit 1
+ match ip address prefix-list TENANT_SUBNETS
+exit
+!
+end

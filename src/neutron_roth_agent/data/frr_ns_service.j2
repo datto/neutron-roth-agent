@@ -1,0 +1,18 @@
+[Unit]
+Description=FRRouting for {{namespace}}
+Documentation=https://frrouting.readthedocs.io/en/latest/setup.html
+
+[Service]
+Nice=-5
+Type=forking
+NotifyAccess=all
+TimeoutSec=2m
+WatchdogSec=60s
+RestartSec=10
+Restart=always
+LimitNOFILE=1024
+ExecStart=/usr/lib/frr/frrinit.sh start {{namespace}}
+ExecStop=/usr/lib/frr/frrinit.sh stop {{namespace}}
+
+[Install]
+WantedBy=multi-user.target

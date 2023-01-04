@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools >= 45.2.0", "wheel != 0.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.poetry]
+name = "neutron-roth-agent"
+version = "0.0.3"
+description = "Neutron agent for routing on the host"
+license = "Apache-2.0"
+authors = [
+  "Anthony Timmins"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+build = "^0.9.0"
