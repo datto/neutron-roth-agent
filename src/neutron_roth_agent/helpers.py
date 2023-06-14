@@ -1022,7 +1022,7 @@ def ensure_frr_ns_dir(ns):
 
 
 def ensure_frr_ns_daemons(ns, router_id):
-    daemons = "/etc/neutron/frr_ns_daemons"
+    daemons = "/var/lib/neutron/roth/frr_ns_daemons"
     ns_daemons = "/etc/frr/%s/daemons" % ns
     service = "frr-%s.service" % router_id
     cp = ["cp", daemons, ns_daemons]
@@ -1058,12 +1058,12 @@ def ensure_frr_ns_daemons(ns, router_id):
 
 def ensure_frr_ns_unit(ns, router_id):
     try:
-        unit_conf = render_template("/etc/neutron/frr_ns_service.j2", namespace=ns)
+        unit_conf = render_template("/var/lib/neutron/roth/frr_ns_service.j2", namespace=ns)
         if not unit_conf:
             return False
 
         service = "frr-%s.service" % router_id
-        filename = "/etc/neutron/frr-%s.service" % router_id
+        filename = "/var/lib/neutron/roth/frr-%s.service" % router_id
         candidate = "%s.candidate" % filename
 
         with open(candidate, "w") as f:
@@ -1222,7 +1222,7 @@ def ensure_frr_namespace(router_id, bgp_id, bgp_peer, router_networks, asn, vrf_
     if len(router_networks) > 1:
         router_networks.sort()
     genconf = render_template(
-        "/etc/neutron/frr_ns_conf.j2",
+        "/var/lib/neutron/roth/frr_ns_conf.j2",
         frr_version=frr_version,
         hostname=hostname,
         asn=asn,
