@@ -2,7 +2,7 @@
 
 ## Contents
 
-- [neutron_roth_agent](#neutron_roth_agent)
+- [neutron\_roth\_agent](#neutron_roth_agent)
   - [Contents](#contents)
   - [Neutron Routing on the Host Plugin](#neutron-routing-on-the-host-plugin)
     - [Overview](#overview)
@@ -267,7 +267,7 @@ pre-commit install
 # Build a source distribution as follows
 python3 -m build --sdist
 # SCP to the destination
-scp dist/neutron-roth-agent-0.0.3.tar.gz root@192.168.1.100:
+scp dist/neutron-roth-agent-0.0.4.tar.gz root@192.168.1.100:
 ```
 
 ### Install neutron-roth-agent
@@ -276,7 +276,7 @@ scp dist/neutron-roth-agent-0.0.3.tar.gz root@192.168.1.100:
 # In the relevant python venv
 cd /openstack/venvs/neutron-21.2.9/
 source bin/activate
-pip install /root/neutron-roth-agent-0.0.3.tar.gz
+pip install /root/neutron-roth-agent-0.0.4.tar.gz
 ```
 
 ### Run neutron-roth-agent
