@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.poetry]
 name = "neutron-roth-agent"
-version = "0.0.3"
+version = "0.0.4"
 description = "Neutron agent for routing on the host"
 license = "Apache-2.0"
 authors = [
