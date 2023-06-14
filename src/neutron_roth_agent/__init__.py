@@ -49,7 +49,7 @@ def copy_data(source, destination):
                     % (filename, destination)
                 )
         if overwrite:
-            if 'frr.service' in destination:
+            if any(x in destination for x in ['frr.service', 'frr_']):
                 Path(destination).mkdir(parents=True, exist_ok=True)
             shutil.copy(source, destination)
             print("SUCCESS: Copied %s to %s" % (source, destination))
@@ -160,7 +160,7 @@ def create_frr_ns_conf(name):
         get_data(
             name
         ),
-        '/etc/neutron/frr_ns_conf.j2'
+        '/var/lib/neutron/roth/frr_ns_conf.j2'
     )
 
 
@@ -169,7 +169,7 @@ def create_frr_ns_daemons(name):
         get_data(
             name
         ),
-        '/etc/neutron/frr_ns_daemons'
+        '/var/lib/neutron/roth/frr_ns_daemons'
     )
 
 
@@ -178,7 +178,7 @@ def create_frr_ns_service(name):
         get_data(
             name
         ),
-        '/etc/neutron/frr_ns_service.j2'
+        '/var/lib/neutron/roth/frr_ns_service.j2'
     )
 
 
