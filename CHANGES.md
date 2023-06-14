@@ -2,6 +2,16 @@
 
 All notable changes will be documented in this file.
 
+## [0.0.4] - 2023-06-14
+
+### Added
+
+### Changed
+
+- frr related files are now written to /var/lib/neutron/roth instead of /etc/neutron.
+
+### Fixed
+
 ## [0.0.3] - 2022-06-20
 
 ### Added
