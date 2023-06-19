@@ -49,7 +49,7 @@ def copy_data(source, destination):
                     % (filename, destination)
                 )
         if overwrite:
-            if any(x in destination for x in ['frr.service', 'frr_']):
+            if any(x in destination for x in ['frr.service']):
                 Path(destination).mkdir(parents=True, exist_ok=True)
             shutil.copy(source, destination)
             print("SUCCESS: Copied %s to %s" % (source, destination))
