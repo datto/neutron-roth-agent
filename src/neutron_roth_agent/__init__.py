@@ -16,6 +16,8 @@
 
 import shutil
 import sys
+import pwd
+import grp
 import os
 import site
 from pathlib import Path
@@ -26,6 +28,8 @@ _ROOT = os.path.abspath(os.path.dirname(__file__))
 _VENV_PATH = sys.exec_prefix
 _VENV_NAME = os.path.basename(_VENV_PATH)
 _PACKAGES = site.getsitepackages()[0]
+_NEUTRON_UID = pwd.getpwnam("neutron").pw_uid
+_NEUTRON_GID = grp.getgrnam("neutron").gr_gid
 
 
 def get_data(path):
@@ -49,9 +53,16 @@ def copy_data(source, destination):
                     % (filename, destination)
                 )
         if overwrite:
+            # Create parent directories
             if any(x in destination for x in ['frr.service', '/var/lib/neutron/roth/']):
                 Path(destination).mkdir(parents=True, exist_ok=True)
+            # Ensure neutron folders are owned by neutron
+            if any(x in destination for x in ['/var/lib/neutron/roth/']):
+                os.chown(destination, _NEUTRON_UID, _NEUTRON_GID)
             shutil.copy(source, destination)
+            # Ensure neutron files are owned by neutron
+            if any(x in destination for x in ['/var/lib/neutron/roth/']):
+                os.chown(destination+filename, _NEUTRON_UID, _NEUTRON_GID)
             print("SUCCESS: Copied %s to %s" % (source, destination))
     except shutil.SameFileError:
         print("Source and destination represents the same file.")
