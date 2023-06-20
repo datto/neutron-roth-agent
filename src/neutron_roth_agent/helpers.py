@@ -1136,7 +1136,7 @@ def get_frr_ns_runconf(ns):
 def ensure_frr_ns_conf(ns, router_id, running, generated):
     try:
         filename = "/etc/frr/%s/frr.conf" % ns
-        candidate = "/etc/neutron/%s.frr.conf.candidate" % ns
+        candidate = "/var/lib/neutron/roth/%s.frr.conf.candidate" % ns
 
         # FRR complains about vtysh.conf not existing, so we
         # just ignore it here. Get the two configs as lists
@@ -1472,8 +1472,8 @@ def delete_service_unit(unit):
             extra_ok_codes=[1],
             run_as_root=True
         )
-        cleanup_file("/etc/neutron/%s" % unit)
-        cleanup_file("/etc/neutron/%s.candidate" % unit)
+        cleanup_file("/var/lib/neutron/roth/%s" % unit)
+        cleanup_file("/var/lib/neutron/roth/%s.candidate" % unit)
         utils.execute(
             ["systemctl", "daemon-reload"],
             check_exit_code=False,
