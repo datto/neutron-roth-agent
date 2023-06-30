@@ -205,6 +205,7 @@ Create the Anycast Gateway on a new bridge and link that bridge to the bridge th
 RotH agent will execute certain tasks on configurable time intervals.
 
 ---
+
 #### Route Manager
 
 A static route is added to a vrf when a transit subnet is attached to a NAT gateway device. This manager will periodically (default: every 30 seconds) check to determine if any static route is still required. It does this by checking if there is a local ARP entry present for the gateway IP address in the static route. If one is not present, an arping is sent, and the condition is checked again. If there is still no entry, the route is deleted. Any related VTYSH configurations are also deleted.
@@ -214,6 +215,7 @@ Further testing is required to ensure there is no case were a route could be del
 </span>
 
 ---
+
 #### Orphan Manager
 
 If instances are deleted from a compute node, it's possible that the network configurations applied by the agent to service those instances are no longer required. This agent will determine if there are no longer any instances present for each configured vrf. If that's the case, the relevant network configurations will be removed:
@@ -224,6 +226,7 @@ If instances are deleted from a compute node, it's possible that the network con
 - FRR configuration
 
 ---
+
 #### Neighbor Manager
 
 This manager will periodically arping every active unicast IP address for each tenant bridge local to the oscomp node. Doing so refreshes the arp timers, and prevents the neighbor entries from transitioning to a stale state. If the IP address does not respond, the timer is not updated, and the entry will timeout as intended.
@@ -233,6 +236,7 @@ If a neighbor entry does reach a stale state, and needs to be revived, the relev
 </span>
 
 ---
+
 #### Reporting
 
 Typical of agent plugins, there is a built-in reporting function to track the state of the agent. The interval is determined by the cfg variables, common to all agents. Example states include:
@@ -267,16 +271,16 @@ pre-commit install
 # Build a source distribution as follows
 python3 -m build --sdist
 # SCP to the destination
-scp dist/neutron-roth-agent-0.0.4.tar.gz root@192.168.1.100:
+scp dist/neutron-roth-agent-0.0.5.tar.gz root@192.168.1.100:
 ```
 
 ### Install neutron-roth-agent
 
 ```bash
 # In the relevant python venv
-cd /openstack/venvs/neutron-21.2.9/
+cd /openstack/venvs/neutron-23.4.3/
 source bin/activate
-pip install /root/neutron-roth-agent-0.0.4.tar.gz
+pip install /root/neutron-roth-agent-0.0.5.tar.gz
 ```
 
 ### Run neutron-roth-agent
