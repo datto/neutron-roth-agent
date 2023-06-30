@@ -198,7 +198,7 @@ def main():
         create_eventlet('roth_neutron_agent.py')
         create_filters('roth-agent.filters')
         create_bin('neutron-roth-agent.j2')
-        create_override('override.conf')
+        create_override('10-neutron_roth_agent.conf')
         create_startup('roth_startup.py')
         create_ini('roth_agent.ini')
         create_frr_ns_conf('frr_ns_conf.j2')

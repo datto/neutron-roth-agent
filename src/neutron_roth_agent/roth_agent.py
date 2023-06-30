@@ -18,6 +18,7 @@ import sys
 import time
 import json
 import ipaddress
+import concurrent.futures
 
 from neutron.agent.linux import utils  # TODO: replace run_as_root
 from neutron_lib.agent import topics
@@ -161,19 +162,23 @@ class RotHAgentLoop(service.Service):
         for vrf in vrfJson:
             helpers.remove_host_route(vrf["name"])
 
+    def _neighbor_worker(self, arp):
+        try:
+            if (
+                "REACHABLE" in arp["state"]
+                and ipaddress.IPv4Address(arp["dst"])
+                and arp["dev"].startswith("brt")
+            ):
+                helpers.arping(arp["dev"], arp["dst"])
+        except ipaddress.AddressValueError:
+            pass
+
     def _neighbor_manager(self):
         try:
             arp_json = json.loads(helpers.get_arp_table())
-            for arp in arp_json:
-                try:
-                    if (
-                        "REACHABLE" in arp["state"]
-                        and ipaddress.IPv4Address(arp["dst"])
-                        and arp["dev"].startswith("brt")
-                    ):
-                        helpers.arping(arp["dev"], arp["dst"])
-                except ipaddress.AddressValueError:
-                    continue
+            with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
+                futures = [executor.submit(self._neighbor_worker, arp) for arp in arp_json]
+                concurrent.futures.wait(futures)
         except Exception as e:
             LOG.error("Neighbor Manager: %s", e)
 
