@@ -2,6 +2,20 @@
 
 All notable changes will be documented in this file.
 
+## [0.0.6] - 2025-11-17
+
+### [0.0.6] Added
+
+- Added `get_frr_vrfs()` function to extract VRF information from FRR BGP configuration when kernel VRFs are not present
+
+### [0.0.6] Changed
+
+- Modified `main()` to use FRR BGP configuration as a fallback when no kernel VRFs are found, ensuring VRF-to-VNI mappings are created for FRR-only VRFs
+
+### [0.0.6] Fixed
+
+- Fixed `ensure_frr_config()` function to properly create VRF-to-VNI mappings on startup. The previous implementation used incorrect command construction that prevented vtysh commands from executing in the same session context, requiring manual configuration via vtysh. Commands now execute using multiple `-c` flags in a single vtysh invocation
+
 ## [0.0.5] - 2023-06-30
 
 ### [0.0.5] Added
