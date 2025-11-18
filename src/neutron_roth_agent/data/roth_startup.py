@@ -66,18 +66,17 @@ def get_bgp_password():
 
 
 def ensure_frr_config(vtysh_config, asn, vrf_id, vni, bgp_pass, bgp_neigh):
-    output = re.search("""vrf %s
- vni %s""" % (vrf_id, vni), vtysh_config, re.DOTALL)
-
-    if not output:
-        commands = ["sudo /usr/bin/vtysh", "'conf t'"]
-        config_template = """'vrf %s'
-            ' vni %s'
-            'exit-vrf'
-            """ % (vrf_id, vni)
-
-        commands += config_template.split("\n")
-        execute_command(" -c ".join(commands))
+    # Check whether vrf + vni already exist
+    pattern = rf"vrf {vrf_id}\s+vni {vni}"
+    if not re.search(pattern, vtysh_config):
+        cmd = (
+            f"sudo /usr/bin/vtysh "
+            f"-c 'conf t' "
+            f"-c 'vrf {vrf_id}' "
+            f"-c ' vni {vni}' "
+            f"-c 'exit-vrf'"
+        )
+        execute_command(cmd)
 
     commands = ["sudo /usr/bin/vtysh", "'conf t'"]
     config_template = """'route-map QROUTER_OUT deny 1'
@@ -187,6 +186,29 @@ def get_bgp_neighbors():
     return False
 
 
+def get_frr_vrfs(vtysh_config):
+    """Extract VRF information from FRR config.
+    Returns a list of dicts with 'name' and 'table' (VNI) keys."""
+    try:
+        vrfs = []
+        # Find all "router bgp <asn> vrf <vrf_name>" entries
+        bgp_vrf_pattern = r"router bgp \d+ vrf (\S+)"
+        vrf_matches = re.findall(bgp_vrf_pattern, vtysh_config)
+
+        for vrf_name in vrf_matches:
+            # Extract VNI from VRF name (e.g., vrf5002 -> 5002)
+            vni_match = re.search(r"vrf(\d+)", vrf_name)
+            if vni_match:
+                vni = vni_match.group(1)
+                vrfs.append({"name": vrf_name, "table": vni})
+                logging.info(f"Found BGP VRF: {vrf_name} with VNI: {vni}")
+
+        return vrfs if vrfs else []
+    except Exception as e:
+        logging.warning("WARNING: %s" % e)
+    return []
+
+
 def main():
     # Ensure FRR config for each vrf
     conf = str(execute_command("/usr/bin/vtysh -c 'show run'"), 'UTF-8')
@@ -194,7 +216,15 @@ def main():
     if not asn:
         logging.warning("WARNING: No BGP ASN found! Aborting...")
         return False
+
+    # Try to get VRFs from kernel first
     vrfJson = json.loads(execute_command("/sbin/ip -j vrf show"))
+
+    # If no kernel VRFs, get VRFs from FRR BGP config
+    if not vrfJson:
+        logging.info("No kernel VRFs found, extracting VRFs from FRR config")
+        vrfJson = get_frr_vrfs(conf)
+
     bgp_pass = get_bgp_password()
     bgp_neighbors = get_bgp_neighbors()
     for vrf in vrfJson:
