@@ -271,16 +271,19 @@ pre-commit install
 # Build a source distribution as follows
 python3 -m build --sdist
 # SCP to the destination
-scp dist/neutron-roth-agent-0.0.5.tar.gz root@192.168.1.100:
+scp dist/neutron-roth-agent-0.0.6.tar.gz root@use1-dcs-images:/srv/dcs-images/packages/roth/
 ```
 
 ### Install neutron-roth-agent
 
 ```bash
 # In the relevant python venv
-cd /openstack/venvs/neutron-23.4.3/
+cd openstack/venvs/neutron-25.6.1.dev4
 source bin/activate
-pip install /root/neutron-roth-agent-0.0.5.tar.gz
+pip install /root/neutron-roth-agent-0.0.6.tar.gz
+
+# Start neutron-roth-agent
+systemctl restart neutron-roth-agent.service
 ```
 
 ### Run neutron-roth-agent
